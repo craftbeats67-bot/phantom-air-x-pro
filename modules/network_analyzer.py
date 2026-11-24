@@ -42,6 +42,7 @@ def run():
     if not nets or ui.confirm("Run a fresh scan first?"):
         with ui.spinner("Scanning..."): nets, _, e = wifi_scanner.scan(config.get("backend"))
         if e: ui.err(e); return
+        if not nets: ui.warn("No networks were reported."); return
         config.SESSION["scan"] = {"networks": nets}
     a = assess(nets); config.SESSION["analysis"] = a
     ui.table("Findings", ["SSID", "Security", "Severity", "Issue"], [[r["ssid"], r["security"], ui.sev(r["severity"]), r["issue"]] for r in a["results"]])

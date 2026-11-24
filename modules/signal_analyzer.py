@@ -14,14 +14,20 @@ def parse_iw_link(text):
     return {"ssid": g(r"SSID:\s*(.+)"), "bssid": g(r"Connected to ([0-9a-f:]{17})"), "signal_dbm": int(sig) if sig else None,
             "freq": int(freq) if freq else None, "channel": ws.freq_to_channel(int(freq)) if freq else None, "bitrate": g(r"tx bitrate:\s*([\d.]+ \S+)")}
 
+def link_from_termux(info):
+    """Android reports '<unknown ssid>', rssi -127 and frequency 0 when Wi-Fi is off or not connected."""
+    ssid, rssi, f = info.get("ssid"), info.get("rssi"), info.get("frequency_mhz") or 0
+    if not ssid or "unknown ssid" in str(ssid).lower() or rssi is None or rssi <= -127 or f <= 0: return None
+    return {"ssid": ssid, "bssid": info.get("bssid"), "signal_dbm": rssi, "freq": f, "channel": ws.freq_to_channel(f),
+            "bitrate": f"{info.get('link_speed_mbps')} Mbps"}
+
 def current_link():
     """(link dict | None, error | None) using iw, nmcli or Termux:API, whichever exists."""
     if sc.platform_name() == "termux":
         info, e = im.termux_info()
         if not info: return None, e
-        f = info.get("frequency_mhz")
-        return {"ssid": info.get("ssid"), "bssid": info.get("bssid"), "signal_dbm": info.get("rssi"), "freq": f, "channel": ws.freq_to_channel(f),
-                "bitrate": f"{info.get('link_speed_mbps')} Mbps"}, None
+        link = link_from_termux(info)
+        return (link, None) if link else (None, "Not connected to Wi-Fi. Turn Wi-Fi on and connect to a network (you may be on mobile data).")
     if sc.have("iw"):
         for n in im.list_wireless():
             rc, out, _ = sc.run(["iw", "dev", n, "link"])

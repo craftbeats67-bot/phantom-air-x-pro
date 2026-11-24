@@ -53,7 +53,7 @@ def logo(width=36):
     return t
 
 def banner():
-    if console.width >= 62:
+    if console.width >= 62 and console.height >= 45:
         for line in big("PHANTOM"): console.print(line, style="c", justify="center")
         for line in big("AIR X PRO"): console.print(line, style="g", justify="center")
     else:
@@ -69,6 +69,8 @@ def menu_table():
 
 def dashboard():
     clear(); banner(); console.print()
+    if console.height < 45:                       # phone-sized terminal: menu only, logo stays on the startup screen
+        console.print(menu_table(), justify="center"); return
     lg = logo(24) if config.get("show_logo") else None
     if lg is not None and console.width >= 90: console.print(Columns([menu_table(), lg], padding=(0, 4)), justify="center")
     else:
@@ -78,7 +80,7 @@ def dashboard():
 def startup(checks):
     """Startup screen: logo, version and a progress bar driven by the real system checks."""
     clear()
-    lg = logo(40) if config.get("show_logo") else None
+    lg = logo(40 if console.height >= 45 else 20) if config.get("show_logo") else None
     if lg is not None: console.print(lg, justify="center")
     banner(); console.print("VERSION 1.0 PRO  ·  DEVELOPED BY KRRISH", style="w", justify="center"); console.print()
     results = []

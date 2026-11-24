@@ -82,6 +82,13 @@ class Signal(unittest.TestCase):
         l = sa.parse_iw_link(t); self.assertEqual((l["ssid"], l["signal_dbm"], l["channel"]), ("Home", -52, 36))
         self.assertIsNone(sa.parse_iw_link("Not connected."))
 
+class AndroidNotConnected(unittest.TestCase):
+    def test_not_connected_values(self):
+        self.assertIsNone(sa.link_from_termux({"ssid": "<unknown ssid>", "rssi": -127, "frequency_mhz": 0}))
+        self.assertIsNone(sa.link_from_termux({"ssid": "Home", "rssi": -127, "frequency_mhz": 2412}))
+        l = sa.link_from_termux({"ssid": "Home", "bssid": "aa:bb:cc:dd:ee:ff", "rssi": -55, "frequency_mhz": 5180, "link_speed_mbps": 433})
+        self.assertEqual((l["ssid"], l["signal_dbm"], l["channel"]), ("Home", -55, 36))
+
 class Inventory(unittest.TestCase):
     def test_cidr_rules(self):
         self.assertIsNotNone(di.check_cidr("192.168.1.0/24")[0])

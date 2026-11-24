@@ -38,6 +38,7 @@ git clone https://github.com/craftbeats67-bot/phantom-air-x-pro.git
 cd phantom-air-x-pro && chmod +x install.sh && ./install.sh
 ./run.sh
 ```
+On Termux always use `./install.sh` and start with `./run.sh` (not `pip install -r requirements.txt` or plain `python main.py`): the tool lives in a virtual environment and `psutil` cannot be built on Android (it is optional).
 Termux also needs the **Termux:API** app (F-Droid), Location permission and Location turned on for Wi-Fi scanning.
 
 ## Platform limits (honest list)

@@ -50,7 +50,7 @@ for t in iw nmcli ip nmap arp-scan; do command -v $t >/dev/null 2>&1 && ok "tool
 
 # 8. basic test
 if [ -x .venv/bin/python ]; then
-  .venv/bin/python -m unittest discover -s tests >/tmp/phantom_test.log 2>&1 && ok "Self-test passed" || { bad "Self-test failed (see /tmp/phantom_test.log)"; FAILED=1; }
+  .venv/bin/python -m unittest discover -s tests >${TMPDIR:-/tmp}/phantom_test.log 2>&1 && ok "Self-test passed" || { bad "Self-test failed (see ${TMPDIR:-/tmp}/phantom_test.log)"; FAILED=1; }
 fi
 
 # launcher

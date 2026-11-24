@@ -77,6 +77,8 @@ def run():
         info, e = termux_info()
         if info:
             ui.table("Android Wi-Fi connection", ["Field", "Value"], [[k, v] for k, v in info.items() if k in ("ssid", "bssid", "rssi", "frequency_mhz", "link_speed_mbps", "ip")])
+            if "unknown ssid" in str(info.get("ssid", "")).lower() or (info.get("rssi") or 0) <= -127:
+                ui.warn("Android reports no active Wi-Fi connection (Wi-Fi off, on mobile data, or Location permission missing).")
         else: ui.warn(e)
         ui.info("Android does not expose raw interface details to Termux without root.")
     else:

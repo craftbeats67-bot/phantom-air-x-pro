@@ -107,7 +107,10 @@ def scan(pref="auto"):
     if b == "termux":
         rc, out, e = sc.run(["termux-wifi-scaninfo"], 30)
         if rc != 0: return [], b, e or "termux-wifi-scaninfo failed. Install the Termux:API app, grant Location permission and turn Location on."
-        try: return parse_termux(out), b, None
+        try:
+            nets = parse_termux(out)
+            if not nets: return [], b, "Android returned no networks. Turn Wi-Fi ON, give the Termux:API app Location permission, and turn Location ON."
+            return nets, b, None
         except ValueError as ex: return [], b, f"{ex} (grant Location permission to Termux:API and enable Location)"
     if b == "nmcli":
         rc, out, e = sc.run(["nmcli", "-t", "-f", "IN-USE,SSID,BSSID,CHAN,FREQ,SIGNAL,SECURITY", "dev", "wifi", "list", "--rescan", "yes"], 40)

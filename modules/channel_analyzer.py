@@ -28,6 +28,7 @@ def run():
     ui.header("05 · CHANNEL INFORMATION")
     with ui.spinner("Scanning..."): nets, _, e = wifi_scanner.scan(config.get("backend"))
     if e: ui.err(e); return
+    if not nets: ui.warn("No networks were reported."); return
     s = summarize(nets); config.SESSION["channels"] = s
     rows = [[b, c, v, "█" * min(30, v)] for (b, c), v in sorted(((tuple(k.split("|")), v) for k, v in s["per_channel"].items()), key=lambda x: (x[0][0], int(x[0][1])))]
     ui.table("Networks per channel", ["Band", "Channel", "Networks", "Usage"], rows)
